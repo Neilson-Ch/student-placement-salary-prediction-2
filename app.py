@@ -25,7 +25,6 @@ with st.form("input_form"):
     with col1:
         cgpa = st.number_input("CGPA", 0.0, 10.0)
         twelfth_percentage = st.number_input("12th Percentage", 0.0, 100.0)
-        backlogs = st.number_input("Backlogs", 0, 20)
 
     with col2:
         study_hours_per_day = st.number_input("Study Hours per Day", 0.0, 24.0)
@@ -33,7 +32,6 @@ with st.form("input_form"):
         attendance_percentage = st.number_input("Attendance %", 0.0, 100.0)
 
     with col3:
-        projects_completed = st.number_input("Projects Completed", 0, 20)
         internships_completed = st.number_input("Internships Completed", 0, 10)
         stress_level = st.number_input("Stress Level", 0, 10)
 
@@ -83,10 +81,8 @@ with st.form("input_form"):
     data = {
         "cgpa": cgpa,
         "twelfth_percentage": twelfth_percentage,
-        "backlogs": backlogs,
         "study_hours_per_day": study_hours_per_day,
         "attendance_percentage": attendance_percentage,
-        "projects_completed": projects_completed,
         "internships_completed": internships_completed,
         "coding_skill_rating": coding_skill_rating,
         "communication_skill_rating": communication_skill_rating,
