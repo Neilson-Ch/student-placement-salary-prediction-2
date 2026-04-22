@@ -106,5 +106,24 @@ with st.form("input_form"):
 
     df = pd.DataFrame([data])
 
+    if submit:
+        try:
+            # classification
+            pred_class = clf.predict(df)[0]
+            placement = "Placed" if pred_class == 1 else "Not Placed"
+    
+            st.subheader("📊 Result")
+            st.write(f"Placement Status: **{placement}**")
+    
+            # regression (conditional)
+            if pred_class == 1:
+                salary = reg.predict(df)[0]
+                st.write(f"Estimated Salary: **{round(float(salary), 2)} LPA**")
+            else:
+                st.write("Estimated Salary: ❌ Not Applicable")
+    
+        except Exception as e:
+            st.error(f"Error: {e}")
+
 if __name__ == "__main__":
     main()
