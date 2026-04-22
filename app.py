@@ -2,67 +2,67 @@ import streamlit as st
 import joblib
 import pandas as pd
 
+clf = joblib.load('artifacts/model_classification.pkl')
+reg = joblib.load('artifacts/model_regression.pkl')
 
-clf = joblib.load('model_classification.pkl')
-reg = joblib.load('model_regression.pkl')
+# Urutan kolom yang diharapkan model (sesuai train.py)
+FEATURE_COLS = [
+    'cgpa', 'twelfth_percentage', 'study_hours_per_day',
+    'attendance_percentage', 'internships_completed',
+    'coding_skill_rating', 'communication_skill_rating',
+    'aptitude_skill_rating', 'hackathons_participated',
+    'certifications_count', 'sleep_hours', 'stress_level',
+    'gender', 'branch', 'part_time_job', 'family_income_level',
+    'city_tier', 'internet_access', 'extracurricular_involvement'
+]
 
 
 def main():
     st.set_page_config(page_title="Student Prediction", layout="wide")
+    st.title("🎓 Student Placement & Salary Prediction")
 
-st.title("🎓 Student Placement & Salary Prediction")
-
-# ===== SIDEBAR =====
-st.sidebar.header("📌 About")
-st.sidebar.write("Input data mahasiswa untuk prediksi placement dan salary.")
-
-# ===== FORM =====
-with st.form("input_form"):
+    st.sidebar.header("📌 About")
+    st.sidebar.write("Input data mahasiswa untuk prediksi placement dan salary.")
 
     st.subheader("📊 Academic Information")
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        cgpa = st.number_input("CGPA", 0.0, 10.0)
-        twelfth_percentage = st.number_input("12th Percentage", 0.0, 100.0)
-        backlogs = st.number_input("Backlogs", 0, 20)
+        cgpa = st.number_input("CGPA", 0.0, 10.0, value=7.0)
+        twelfth_percentage = st.number_input("12th Percentage", 0.0, 100.0, value=75.0)
 
     with col2:
-        study_hours_per_day = st.number_input("Study Hours per Day", 0.0, 24.0)
-        sleep_hours = st.number_input("Sleep Hours", 0.0, 24.0)
-        attendance_percentage = st.number_input("Attendance %", 0.0, 100.0)
+        study_hours_per_day = st.number_input("Study Hours per Day", 0.0, 24.0, value=5.0)
+        sleep_hours = st.number_input("Sleep Hours", 0.0, 24.0, value=7.0)
 
     with col3:
-        projects_completed = st.number_input("Projects Completed", 0, 20)
-        internships_completed = st.number_input("Internships Completed", 0, 10)
-        stress_level = st.number_input("Stress Level", 0, 10)
+        attendance_percentage = st.number_input("Attendance %", 0.0, 100.0, value=80.0)
+        internships_completed = st.number_input("Internships Completed", 0, 10, value=1)
+
+    stress_level = st.number_input("Stress Level", 0, 10, value=5)
 
     st.subheader("💡 Skills")
     col4, col5, col6 = st.columns(3)
-
     with col4:
-        coding_skill_rating = st.slider("Coding Skill", 1, 10)
-
+        coding_skill_rating = st.slider("Coding Skill", 1, 10, value=6)
     with col5:
-        communication_skill_rating = st.slider("Communication Skill", 1, 10)
-
+        communication_skill_rating = st.slider("Communication Skill", 1, 10, value=6)
     with col6:
-        aptitude_skill_rating = st.slider("Aptitude Skill", 1, 10)
+        aptitude_skill_rating = st.slider("Aptitude Skill", 1, 10, value=6)
 
     st.subheader("🏆 Activities")
     col7, col8 = st.columns(2)
-
     with col7:
-        hackathons_participated = st.number_input("Hackathons", 0, 20)
-
+        hackathons_participated = st.number_input("Hackathons", 0, 20, value=1)
     with col8:
-        certifications_count = st.number_input("Certifications", 0, 20)
+        certifications_count = st.number_input("Certifications", 0, 20, value=2)
 
     st.subheader("👤 Personal Information")
     col9, col10, col11 = st.columns(3)
 
     with col9:
         gender = st.selectbox("Gender", ["Male", "Female"])
+        # FIX: branch sesuai data training: CSE, ECE, IT, CE, ME
         branch = st.selectbox("Branch", ["CSE", "ECE", "IT", "CE", "ME"])
 
     with col10:
@@ -73,50 +73,45 @@ with st.form("input_form"):
         family_income_level = st.selectbox("Family Income", ["Low", "Medium", "High"])
         part_time_job = st.selectbox("Part Time Job", ["Yes", "No"])
 
+    # FIX: nilai yang benar sesuai data training: "Low", "Medium", "High", bukan "Yes"/"No"
     extracurricular_involvement = st.selectbox(
         "Extracurricular Involvement",
         ["Low", "Medium", "High", "Unknown"]
     )
 
-    submit = st.form_submit_button("🚀 Predict")
+    if st.button("🚀 Predict"):
+        data = {
+            "cgpa": cgpa,
+            "twelfth_percentage": twelfth_percentage,
+            "study_hours_per_day": study_hours_per_day,
+            "attendance_percentage": attendance_percentage,
+            "internships_completed": internships_completed,
+            "coding_skill_rating": coding_skill_rating,
+            "communication_skill_rating": communication_skill_rating,
+            "aptitude_skill_rating": aptitude_skill_rating,
+            "hackathons_participated": hackathons_participated,
+            "certifications_count": certifications_count,
+            "sleep_hours": sleep_hours,
+            "extracurricular_involvement": extracurricular_involvement,
+            "gender": gender,
+            "branch": branch,
+            "city_tier": city_tier,
+            "internet_access": internet_access,
+            "family_income_level": family_income_level,
+            "part_time_job": part_time_job,
+            "stress_level": stress_level
+        }
 
-    data = {
-        "cgpa": cgpa,
-        "twelfth_percentage": twelfth_percentage,
-        "study_hours_per_day": study_hours_per_day,
-        "attendance_percentage": attendance_percentage,
-        "internships_completed": internships_completed,
-        "coding_skill_rating": coding_skill_rating,
-        "communication_skill_rating": communication_skill_rating,
-        "aptitude_skill_rating": aptitude_skill_rating,
-        "hackathons_participated": hackathons_participated,
-        "certifications_count": certifications_count,
-        "sleep_hours": sleep_hours,
-        "extracurricular_involvement": extracurricular_involvement,
-        "gender": gender,
-        "branch": branch,
-        "city_tier": city_tier,
-        "internet_access": internet_access,
-        "family_income_level": family_income_level,
-        "part_time_job": part_time_job,
-        "stress_level": stress_level
-    }
+        # FIX: select hanya kolom yang diharapkan model, urutan benar
+        df = pd.DataFrame([data])[FEATURE_COLS]
 
-    df = pd.DataFrame([data])
-
-    # =========================
-    # PREDICTION
-    # =========================
-    if st.button("Predict"):
         try:
-            # classification
             pred_class = clf.predict(df)[0]
             placement = "Placed" if pred_class == 1 else "Not Placed"
 
             st.subheader("📊 Result")
             st.write(f"Placement Status: **{placement}**")
 
-            # regression (conditional)
             if pred_class == 1:
                 salary = reg.predict(df)[0]
                 st.write(f"Estimated Salary: **{round(float(salary), 2)} LPA**")
