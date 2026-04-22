@@ -77,10 +77,6 @@ with st.form("input_form"):
         ["Yes", "No", "Unknown"]
     )
 
-    submit = st.form_submit_button("🚀 Predict")
-    # =========================
-    # CREATE DATAFRAME
-    # =========================
     data = {
         "cgpa": cgpa,
             "twelfth_percentage": twelfth_percentage,
