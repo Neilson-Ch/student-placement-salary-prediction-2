@@ -77,27 +77,29 @@ with st.form("input_form"):
         ["Yes", "No", "Unknown"]
     )
 
+    submit = st.form_submit_button("🚀 Predict")
+    
     data = {
         "cgpa": cgpa,
-            "twelfth_percentage": twelfth_percentage,
-            "backlogs": backlogs,
-            "study_hours_per_day": study_hours_per_day,
-            "attendance_percentage": attendance_percentage,
-            "projects_completed": projects_completed,
-            "internships_completed": internships_completed,
-            "coding_skill_rating": coding_skill_rating,
-            "communication_skill_rating": communication_skill_rating,
-            "aptitude_skill_rating": aptitude_skill_rating,
-            "hackathons_participated": hackathons_participated,
-            "certifications_count": certifications_count,
-            "sleep_hours": sleep_hours,
-            "extracurricular_involvement": extracurricular_involvement,
-            "gender": gender,
-            "branch": branch,
-            "city_tier": city_tier,
-            "internet_access": internet_access,
-            "family_income_level": family_income_level,
-            "part_time_job": part_time_job
+        "twelfth_percentage": twelfth_percentage,
+        "backlogs": backlogs,
+        "study_hours_per_day": study_hours_per_day,
+        "attendance_percentage": attendance_percentage,
+        "projects_completed": projects_completed,
+        "internships_completed": internships_completed,
+        "coding_skill_rating": coding_skill_rating,
+        "communication_skill_rating": communication_skill_rating,
+        "aptitude_skill_rating": aptitude_skill_rating,
+        "hackathons_participated": hackathons_participated,
+        "certifications_count": certifications_count,
+        "sleep_hours": sleep_hours,
+        "extracurricular_involvement": extracurricular_involvement,
+        "gender": gender,
+        "branch": branch,
+        "city_tier": city_tier,
+        "internet_access": internet_access,
+        "family_income_level": family_income_level,
+        "part_time_job": part_time_job
     }
 
     df = pd.DataFrame([data])
