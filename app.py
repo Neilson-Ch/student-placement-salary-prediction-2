@@ -2,19 +2,20 @@ import streamlit as st
 import joblib
 import pandas as pd
 
-
+# ===== LOAD MODEL =====
 clf = joblib.load('model_classification.pkl')
 reg = joblib.load('model_regression.pkl')
 
-
-def main():
-    st.set_page_config(page_title="Student Prediction", layout="wide")
+# ===== PAGE CONFIG =====
+st.set_page_config(page_title="Student Prediction", layout="wide")
 
 st.title("🎓 Student Placement & Salary Prediction")
 
+# ===== SIDEBAR =====
 st.sidebar.header("📌 About")
 st.sidebar.write("Input data mahasiswa untuk prediksi placement dan salary.")
 
+# ===== FORM =====
 with st.form("input_form"):
 
     st.subheader("📊 Academic Information")
@@ -74,50 +75,66 @@ with st.form("input_form"):
         ["Yes", "No", "Unknown"]
     )
 
+    # ===== SUBMIT BUTTON =====
     submit = st.form_submit_button("🚀 Predict")
 
-    data = {
-        "cgpa": cgpa,
-        "twelfth_percentage": twelfth_percentage,
-        "study_hours_per_day": study_hours_per_day,
-        "attendance_percentage": attendance_percentage,
-        "internships_completed": internships_completed,
-        "coding_skill_rating": coding_skill_rating,
-        "communication_skill_rating": communication_skill_rating,
-        "aptitude_skill_rating": aptitude_skill_rating,
-        "hackathons_participated": hackathons_participated,
-        "certifications_count": certifications_count,
-        "sleep_hours": sleep_hours,
-        "extracurricular_involvement": extracurricular_involvement,
-        "gender": gender,
-        "branch": branch,
-        "city_tier": city_tier,
-        "internet_access": internet_access,
-        "family_income_level": family_income_level,
-        "part_time_job": part_time_job,
-        "stress_level": stress_level
-    }
+# ===== PREDICTION =====
+if submit:
+    try:
+        # ===== CREATE DATAFRAME =====
+        data = {
+            "cgpa": cgpa,
+            "twelfth_percentage": twelfth_percentage,
+            "study_hours_per_day": study_hours_per_day,
+            "attendance_percentage": attendance_percentage,
+            "internships_completed": internships_completed,
+            "coding_skill_rating": coding_skill_rating,
+            "communication_skill_rating": communication_skill_rating,
+            "aptitude_skill_rating": aptitude_skill_rating,
+            "hackathons_participated": hackathons_participated,
+            "certifications_count": certifications_count,
+            "sleep_hours": sleep_hours,
+            "stress_level": stress_level,
+            "gender": gender,
+            "branch": branch,
+            "part_time_job": part_time_job,
+            "family_income_level": family_income_level,
+            "city_tier": city_tier,
+            "internet_access": internet_access,
+            "extracurricular_involvement": extracurricular_involvement
+        }
 
-    df = pd.DataFrame([data])
+        df = pd.DataFrame([data])
 
-    if submit:
-        try:
-            # classification
-            pred_class = clf.predict(df)[0]
-            placement = "Placed" if pred_class == 1 else "Not Placed"
-    
-            st.subheader("📊 Result")
-            st.write(f"Placement Status: **{placement}**")
-    
-            # regression (conditional)
-            if pred_class == 1:
-                salary = reg.predict(df)[0]
-                st.write(f"Estimated Salary: **{round(float(salary), 2)} LPA**")
-            else:
-                st.write("Estimated Salary: ❌ Not Applicable")
-    
-        except Exception as e:
-            st.error(f"Error: {e}")
+        # ===== ENSURE COLUMN ORDER SAME AS TRAINING =====
+        expected_cols = [
+            'cgpa','twelfth_percentage','study_hours_per_day','attendance_percentage',
+            'internships_completed','coding_skill_rating','communication_skill_rating',
+            'aptitude_skill_rating','hackathons_participated','certifications_count',
+            'sleep_hours','stress_level',
+            'gender','branch','part_time_job','family_income_level',
+            'city_tier','internet_access','extracurricular_involvement'
+        ]
 
-if __name__ == "__main__":
-    main()
+        df = df[expected_cols]
+
+        # ===== CLASSIFICATION =====
+        pred_class = clf.predict(df)[0]
+        placement = "Placed" if pred_class == 1 else "Not Placed"
+
+        st.subheader("📊 Result")
+        st.write(f"Placement Status: **{placement}**")
+
+        # ===== REGRESSION =====
+        if pred_class == 1:
+            salary = reg.predict(df)[0]
+
+            # guard biar tidak absurd
+            salary = max(0, salary)
+
+            st.write(f"Estimated Salary: **{round(float(salary), 2)} LPA**")
+        else:
+            st.write("Estimated Salary: ❌ Not Applicable")
+
+    except Exception as e:
+        st.error(f"Error: {e}")
