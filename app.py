@@ -21,9 +21,6 @@ def main():
     st.set_page_config(page_title="Student Prediction", layout="wide")
     st.title("🎓 Student Placement & Salary Prediction")
 
-    st.sidebar.header("📌 About")
-    st.sidebar.write("Input data mahasiswa untuk prediksi placement dan salary.")
-
     st.subheader("📊 Academic Information")
     col1, col2, col3 = st.columns(3)
 
