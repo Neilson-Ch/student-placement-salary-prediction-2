@@ -2,8 +2,8 @@ import streamlit as st
 import joblib
 import pandas as pd
 
-clf = joblib.load('artifacts/model_classification.pkl')
-reg = joblib.load('artifacts/model_regression.pkl')
+clf = joblib.load('model_classification.pkl')
+reg = joblib.load('model_regression.pkl')
 
 # Urutan kolom yang diharapkan model (sesuai train.py)
 FEATURE_COLS = [
