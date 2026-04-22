@@ -2,12 +2,13 @@ import streamlit as st
 import joblib
 import pandas as pd
 
-# ===== LOAD MODEL =====
+
 clf = joblib.load('model_classification.pkl')
 reg = joblib.load('model_regression.pkl')
 
-# ===== PAGE CONFIG =====
-st.set_page_config(page_title="Student Prediction", layout="wide")
+
+def main():
+    st.set_page_config(page_title="Student Prediction", layout="wide")
 
 st.title("🎓 Student Placement & Salary Prediction")
 
@@ -24,6 +25,7 @@ with st.form("input_form"):
     with col1:
         cgpa = st.number_input("CGPA", 0.0, 10.0)
         twelfth_percentage = st.number_input("12th Percentage", 0.0, 100.0)
+        backlogs = st.number_input("Backlogs", 0, 20)
 
     with col2:
         study_hours_per_day = st.number_input("Study Hours per Day", 0.0, 24.0)
@@ -31,6 +33,7 @@ with st.form("input_form"):
         attendance_percentage = st.number_input("Attendance %", 0.0, 100.0)
 
     with col3:
+        projects_completed = st.number_input("Projects Completed", 0, 20)
         internships_completed = st.number_input("Internships Completed", 0, 10)
         stress_level = st.number_input("Stress Level", 0, 10)
 
@@ -60,7 +63,7 @@ with st.form("input_form"):
 
     with col9:
         gender = st.selectbox("Gender", ["Male", "Female"])
-        branch = st.selectbox("Branch", ["CSE", "ECE", "ME", "CE", "Other"])
+        branch = st.selectbox("Branch", ["CSE", "ECE", "IT", "CE", "ME"])
 
     with col10:
         city_tier = st.selectbox("City Tier", ["Tier 1", "Tier 2", "Tier 3"])
@@ -72,69 +75,57 @@ with st.form("input_form"):
 
     extracurricular_involvement = st.selectbox(
         "Extracurricular Involvement",
-        ["Yes", "No", "Unknown"]
+        ["Low", "Medium", "High", "Unknown"]
     )
 
-    # ===== SUBMIT BUTTON =====
     submit = st.form_submit_button("🚀 Predict")
 
-# ===== PREDICTION =====
-if submit:
-    try:
-        # ===== CREATE DATAFRAME =====
-        data = {
-            "cgpa": cgpa,
-            "twelfth_percentage": twelfth_percentage,
-            "study_hours_per_day": study_hours_per_day,
-            "attendance_percentage": attendance_percentage,
-            "internships_completed": internships_completed,
-            "coding_skill_rating": coding_skill_rating,
-            "communication_skill_rating": communication_skill_rating,
-            "aptitude_skill_rating": aptitude_skill_rating,
-            "hackathons_participated": hackathons_participated,
-            "certifications_count": certifications_count,
-            "sleep_hours": sleep_hours,
-            "stress_level": stress_level,
-            "gender": gender,
-            "branch": branch,
-            "part_time_job": part_time_job,
-            "family_income_level": family_income_level,
-            "city_tier": city_tier,
-            "internet_access": internet_access,
-            "extracurricular_involvement": extracurricular_involvement
-        }
+    data = {
+        "cgpa": cgpa,
+        "twelfth_percentage": twelfth_percentage,
+        "study_hours_per_day": study_hours_per_day,
+        "attendance_percentage": attendance_percentage,
+        "internships_completed": internships_completed,
+        "coding_skill_rating": coding_skill_rating,
+        "communication_skill_rating": communication_skill_rating,
+        "aptitude_skill_rating": aptitude_skill_rating,
+        "hackathons_participated": hackathons_participated,
+        "certifications_count": certifications_count,
+        "sleep_hours": sleep_hours,
+        "extracurricular_involvement": extracurricular_involvement,
+        "gender": gender,
+        "branch": branch,
+        "city_tier": city_tier,
+        "internet_access": internet_access,
+        "family_income_level": family_income_level,
+        "part_time_job": part_time_job,
+        "stress_level": stress_level
+    }
 
-        df = pd.DataFrame([data])
+    df = pd.DataFrame([data])
 
-        # ===== ENSURE COLUMN ORDER SAME AS TRAINING =====
-        expected_cols = [
-            'cgpa','twelfth_percentage','study_hours_per_day','attendance_percentage',
-            'internships_completed','coding_skill_rating','communication_skill_rating',
-            'aptitude_skill_rating','hackathons_participated','certifications_count',
-            'sleep_hours','stress_level',
-            'gender','branch','part_time_job','family_income_level',
-            'city_tier','internet_access','extracurricular_involvement'
-        ]
+    # =========================
+    # PREDICTION
+    # =========================
+    if st.button("Predict"):
+        try:
+            # classification
+            pred_class = clf.predict(df)[0]
+            placement = "Placed" if pred_class == 1 else "Not Placed"
 
-        df = df[expected_cols]
+            st.subheader("📊 Result")
+            st.write(f"Placement Status: **{placement}**")
 
-        # ===== CLASSIFICATION =====
-        pred_class = clf.predict(df)[0]
-        placement = "Placed" if pred_class == 1 else "Not Placed"
+            # regression (conditional)
+            if pred_class == 1:
+                salary = reg.predict(df)[0]
+                st.write(f"Estimated Salary: **{round(float(salary), 2)} LPA**")
+            else:
+                st.write("Estimated Salary: ❌ Not Applicable")
 
-        st.subheader("📊 Result")
-        st.write(f"Placement Status: **{placement}**")
+        except Exception as e:
+            st.error(f"Error: {e}")
 
-        # ===== REGRESSION =====
-        if pred_class == 1:
-            salary = reg.predict(df)[0]
 
-            # guard biar tidak absurd
-            salary = max(0, salary)
-
-            st.write(f"Estimated Salary: **{round(float(salary), 2)} LPA**")
-        else:
-            st.write("Estimated Salary: ❌ Not Applicable")
-
-    except Exception as e:
-        st.error(f"Error: {e}")
+if __name__ == "__main__":
+    main()
