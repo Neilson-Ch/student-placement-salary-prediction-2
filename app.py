@@ -12,11 +12,9 @@ def main():
 
 st.title("🎓 Student Placement & Salary Prediction")
 
-# ===== SIDEBAR =====
 st.sidebar.header("📌 About")
 st.sidebar.write("Input data mahasiswa untuk prediksi placement dan salary.")
 
-# ===== FORM =====
 with st.form("input_form"):
 
     st.subheader("📊 Academic Information")
